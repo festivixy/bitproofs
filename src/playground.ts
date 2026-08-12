@@ -37,18 +37,18 @@ export function deriveLibrary(entry: CatalogEntry): Library | null {
   return { ops, nConstants: constants.size, fixedConstants: [] };
 }
 
-function errorMessage(error: unknown): string {
+export function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-function statusLine(className: string, text: string): HTMLParagraphElement {
+export function statusLine(className: string, text: string): HTMLParagraphElement {
   const p = document.createElement("p");
   p.className = className;
   p.textContent = text;
   return p;
 }
 
-async function runSynthesis(
+export async function runSynthesis(
   target: Program,
   library: Library,
   button: HTMLButtonElement,
@@ -184,6 +184,11 @@ export function renderPlayground(entry: CatalogEntry): HTMLElement {
         `${entry.tier} — no derived program exists yet, so there is nothing to synthesize toward or prove.`,
       ),
     );
+    const tryOwnEarly = document.createElement("a");
+    tryOwnEarly.className = "try-own-link";
+    tryOwnEarly.href = "#/play/custom";
+    tryOwnEarly.textContent = "try your own expression";
+    el.appendChild(tryOwnEarly);
     el.appendChild(renderBackLink(`#/e/${entry.slug}`, "back to entry"));
     return el;
   }
@@ -214,6 +219,12 @@ export function renderPlayground(entry: CatalogEntry): HTMLElement {
   } else {
     el.appendChild(statusLine("dim", "no independent spec — verified upper bound only"));
   }
+
+  const tryOwn = document.createElement("a");
+  tryOwn.className = "try-own-link";
+  tryOwn.href = "#/play/custom";
+  tryOwn.textContent = "try your own expression";
+  el.appendChild(tryOwn);
 
   el.appendChild(renderBackLink(`#/e/${entry.slug}`, "back to entry"));
   return el;

@@ -9,6 +9,7 @@ import {
   renderScope,
 } from "./pages";
 import { renderPlayground } from "./playground";
+import { renderCustom } from "./custom";
 import { getContext } from "./z3";
 import { runBattery } from "./battery";
 
@@ -84,6 +85,10 @@ function renderContent(hash: string): HTMLElement {
   if (entryMatch) {
     const entry = findEntry(entryMatch[1]);
     return entry ? renderEntry(entry) : renderNotFound();
+  }
+
+  if (hash === "#/play/custom") {
+    return renderCustom();
   }
 
   const playMatch = hash.match(/^#\/play\/(.+)$/);

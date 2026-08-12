@@ -227,6 +227,13 @@ export function renderList(entries: CatalogEntry[]): HTMLElement {
   }
 
   el.appendChild(table);
+
+  const tryOwn = document.createElement("a");
+  tryOwn.className = "try-own-link";
+  tryOwn.href = "#/play/custom";
+  tryOwn.textContent = "try your own expression";
+  el.appendChild(tryOwn);
+
   return el;
 }
 

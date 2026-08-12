@@ -368,7 +368,9 @@ pre.program {
 }
 
 .btn-synthesize,
-.btn-prove {
+.btn-prove,
+.btn-hunt,
+.btn-parse {
   font-family: var(--font-mono);
   font-size: 0.85rem;
   color: var(--ink);
@@ -379,15 +381,56 @@ pre.program {
 }
 
 .btn-synthesize:hover,
-.btn-prove:hover {
+.btn-prove:hover,
+.btn-hunt:hover,
+.btn-parse:hover {
   border-color: var(--blue);
   color: var(--blue);
 }
 
 .btn-synthesize:disabled,
-.btn-prove:disabled {
+.btn-prove:disabled,
+.btn-hunt:disabled,
+.btn-parse:disabled {
   opacity: 0.5;
   cursor: default;
+}
+
+.custom-form {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.custom-input {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--dim);
+  padding: 0.5rem 0.75rem;
+}
+
+.custom-input:focus-visible {
+  outline: 1px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.custom-result {
+  margin-top: 0.5rem;
+}
+
+.try-own-link {
+  display: inline-block;
+  margin-top: 2rem;
+  margin-right: 1.5rem;
+  color: var(--dim);
+  font-size: 0.85rem;
+}
+
+.try-own-link:hover {
+  color: var(--blue);
 }
 
 .playground-status {
