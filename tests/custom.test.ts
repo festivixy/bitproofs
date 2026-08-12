@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { libraryFromProgram, librariesOfSize, renderCustom } from "../src/custom";
 import { parseExpr } from "../src/expr";
-import { installFakeDocument } from "./dom-shim";
+import { installFakeDocument, installFakeLocation } from "./dom-shim";
 
 describe("libraryFromProgram", () => {
   it("derives ops and n_constants from a parsed program", () => {
@@ -85,5 +85,20 @@ describe("renderCustom", () => {
     input.value = "x & (x - 1)";
     form.onsubmit({ preventDefault: () => {} });
     expect(el.querySelector("button.btn-hunt")).not.toBeNull();
+  });
+
+  it("prefills the input from the ?e= query param in location.hash", () => {
+    installFakeLocation("#/play/custom?e=x%20%26%20(x%20-%201)");
+    const el = renderCustom();
+    const input = el.querySelector("input.custom-input") as unknown as { value: string };
+    expect(input.value).toBe("x & (x - 1)");
+    installFakeLocation("");
+  });
+
+  it("leaves the input untouched when location.hash has no query param", () => {
+    installFakeLocation("#/play/custom");
+    const el = renderCustom();
+    const input = el.querySelector("input.custom-input") as unknown as { value: string };
+    expect(input.value).toBeUndefined();
   });
 });

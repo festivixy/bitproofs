@@ -87,7 +87,7 @@ function renderContent(hash: string): HTMLElement {
     return entry ? renderEntry(entry) : renderNotFound();
   }
 
-  if (hash === "#/play/custom") {
+  if (hash === "#/play/custom" || hash.startsWith("#/play/custom?")) {
     return renderCustom();
   }
 

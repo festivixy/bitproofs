@@ -1,5 +1,6 @@
 import { Operand, Program } from "./ir";
 import { CatalogEntry } from "./catalog";
+import { toExpression } from "./cform";
 
 const SUPEROPT_REPO = "https://github.com/festivixy/superopt";
 const LLVM_ISSUE = "https://github.com/llvm/llvm-project/issues/212908";
@@ -18,11 +19,34 @@ function tierBadgeClass(tier: string): string {
   return "badge-none";
 }
 
+function tierBadgeTitle(tier: string): string {
+  if (tier.includes("proven")) return "A completed search certified no shorter program exists.";
+  if (tier.includes("best found")) return "Synthesized and verified; the minimality floor is not certified.";
+  if (tier.includes("verified upper bound")) {
+    return "A hand-built program, verified exhaustively at small widths and fuzzed at 32 bits; no minimality claim.";
+  }
+  return "The synthesis frontier: no verified program yet.";
+}
+
 function renderBadge(tier: string): HTMLSpanElement {
   const badge = document.createElement("span");
   badge.className = `badge ${tierBadgeClass(tier)}`;
+  badge.title = tierBadgeTitle(tier);
   badge.textContent = tier;
   return badge;
+}
+
+export function renderExpressionLine(expression: string): HTMLParagraphElement {
+  const p = document.createElement("p");
+  p.className = "expr-line";
+  const label = document.createElement("span");
+  label.className = "dim";
+  label.textContent = "as one expression: ";
+  p.appendChild(label);
+  const code = document.createElement("code");
+  code.textContent = expression;
+  p.appendChild(code);
+  return p;
 }
 
 function formatOperand(operand: Operand): string {
@@ -181,9 +205,45 @@ export function renderFooter(): HTMLElement {
   return footer;
 }
 
+function renderHero(): HTMLElement {
+  const hero = document.createElement("section");
+  hero.className = "hero";
+
+  const heading = document.createElement("h1");
+  heading.className = "hero-heading";
+  heading.textContent = "Compilers guess. This proves.";
+  hero.appendChild(heading);
+
+  const copy = document.createElement("p");
+  copy.className = "hero-copy";
+  copy.textContent =
+    "Every bit trick here is checked by the Z3 theorem prover — not tested on some inputs, proved on all of them. The playground runs the same prover in your browser: pick an entry and watch a program get derived from nothing, then proved correct.";
+  hero.appendChild(copy);
+
+  const ctas = document.createElement("div");
+  ctas.className = "hero-ctas";
+
+  const watchLink = document.createElement("a");
+  watchLink.className = "hero-cta";
+  watchLink.href = "#/play/absval";
+  watchLink.textContent = "watch a live derivation";
+  ctas.appendChild(watchLink);
+
+  const tryLink = document.createElement("a");
+  tryLink.className = "hero-cta";
+  tryLink.href = "#/play/custom";
+  tryLink.textContent = "try your own expression";
+  ctas.appendChild(tryLink);
+
+  hero.appendChild(ctas);
+  return hero;
+}
+
 export function renderList(entries: CatalogEntry[]): HTMLElement {
   const el = document.createElement("div");
   el.className = "catalog-list";
+
+  el.appendChild(renderHero());
 
   const heading = document.createElement("h1");
   heading.textContent = "the catalog";
@@ -261,6 +321,18 @@ export function renderEntry(entry: CatalogEntry): HTMLElement {
     pre.className = "program";
     pre.textContent = formatProgram(entry.program);
     el.appendChild(pre);
+
+    const expression = toExpression(entry.program);
+    if (expression !== null) {
+      el.appendChild(renderExpressionLine(expression));
+      if (entry.arity === 1) {
+        const openLink = document.createElement("a");
+        openLink.className = "try-own-link";
+        openLink.href = `#/play/custom?e=${encodeURIComponent(expression)}`;
+        openLink.textContent = "open in the custom playground";
+        el.appendChild(openLink);
+      }
+    }
   }
 
   if (entry.floor_note !== "") {

@@ -1,8 +1,9 @@
 import { CatalogEntry } from "./catalog";
 import { Library, synthesize } from "./cegis";
+import { toExpression } from "./cform";
 import { equivalent } from "./equiv";
 import { Op, Program } from "./ir";
-import { formatProgram, renderBackLink } from "./pages";
+import { formatProgram, renderBackLink, renderExpressionLine } from "./pages";
 import { getContext } from "./z3";
 
 const TIMEOUT_MS = 10_000;
@@ -83,8 +84,18 @@ export async function runSynthesis(
     pre.className = "program";
     pre.textContent = formatProgram(program);
     status.appendChild(pre);
+    const expression = toExpression(program);
+    if (expression !== null) {
+      status.appendChild(renderExpressionLine(expression));
+    }
     status.appendChild(
       statusLine("status-success", `derived in ${elapsed}ms after ${exampleCount} counterexamples`),
+    );
+    status.appendChild(
+      statusLine(
+        "dim",
+        "Derived from examples, corrected by counterexamples, then proved — the result is verified, not tested.",
+      ),
     );
   } catch (error) {
     clearInterval(ticker);
@@ -134,6 +145,14 @@ async function runProof(
       status.appendChild(
         statusLine("status-success", `UNSAT — no input distinguishes them (${elapsed}ms)`),
       );
+      if (program.width === 32) {
+        status.appendChild(
+          statusLine(
+            "dim",
+            "Z3 just considered all 4,294,967,296 possible 32-bit inputs symbolically and found no input where the two programs disagree. That is the proof.",
+          ),
+        );
+      }
     } else {
       status.appendChild(
         statusLine("status-failure", `solver found a counterexample: ${JSON.stringify(result.inputs)}`),

@@ -169,6 +169,11 @@ export function renderCustom(): HTMLElement {
   input.type = "text";
   input.className = "custom-input";
   input.placeholder = "x & (x - 1)";
+  const queryIndex = location.hash.indexOf("?");
+  if (queryIndex !== -1) {
+    const prefill = new URLSearchParams(location.hash.slice(queryIndex + 1)).get("e");
+    if (prefill !== null) input.value = prefill;
+  }
   form.appendChild(input);
 
   const submit = document.createElement("button");

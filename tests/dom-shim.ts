@@ -56,4 +56,11 @@ export function installFakeDocument(): void {
     createTextNode: (data: string) => new FakeText(data),
   };
   (globalThis as unknown as { document: typeof fakeDocument }).document = fakeDocument;
+  if (!("location" in globalThis)) {
+    installFakeLocation("");
+  }
+}
+
+export function installFakeLocation(hash: string): void {
+  (globalThis as unknown as { location: { hash: string } }).location = { hash };
 }
