@@ -108,15 +108,40 @@ function renderExampleTable(entry: CatalogEntry): HTMLTableElement {
   return table;
 }
 
+function renderRegister(): HTMLSpanElement {
+  const register = document.createElement("span");
+  register.className = "register";
+  for (let i = 0; i < 8; i++) {
+    const bit = document.createElement("span");
+    bit.className = `bit ${i % 2 === 0 ? "bit-set" : "bit-clear"}`;
+    register.appendChild(bit);
+  }
+  return register;
+}
+
 export function renderHeader(): HTMLElement {
   const header = document.createElement("header");
   header.className = "site-header";
 
+  const brandBlock = document.createElement("div");
+  brandBlock.className = "brand-block";
+
   const brand = document.createElement("a");
   brand.className = "brand";
   brand.href = "#/";
-  brand.textContent = "bitproofs";
-  header.appendChild(brand);
+  brand.appendChild(renderRegister());
+  const wordmark = document.createElement("span");
+  wordmark.className = "wordmark";
+  wordmark.textContent = "bitproofs";
+  brand.appendChild(wordmark);
+  brandBlock.appendChild(brand);
+
+  const tagline = document.createElement("p");
+  tagline.className = "tagline";
+  tagline.textContent = "bit tricks, machine-proven.";
+  brandBlock.appendChild(tagline);
+
+  header.appendChild(brandBlock);
 
   const nav = document.createElement("nav");
   const aboutLink = document.createElement("a");
@@ -130,6 +155,30 @@ export function renderHeader(): HTMLElement {
   header.appendChild(nav);
 
   return header;
+}
+
+export function renderFooter(): HTMLElement {
+  const footer = document.createElement("footer");
+  footer.className = "site-footer";
+
+  const links = document.createElement("p");
+  const repoLink = document.createElement("a");
+  repoLink.href = SUPEROPT_REPO;
+  repoLink.textContent = "superopt on GitHub";
+  links.appendChild(repoLink);
+  footer.appendChild(links);
+
+  const credit = document.createElement("p");
+  credit.className = "dim";
+  credit.textContent = "inspired by Sean Anderson's Bit Twiddling Hacks and Hacker's Delight.";
+  footer.appendChild(credit);
+
+  const claim = document.createElement("p");
+  claim.className = "dim";
+  claim.textContent = "every claim on this site is checked by Z3; the engine is open source.";
+  footer.appendChild(claim);
+
+  return footer;
 }
 
 export function renderList(entries: CatalogEntry[]): HTMLElement {

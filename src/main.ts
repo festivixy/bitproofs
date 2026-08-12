@@ -1,7 +1,9 @@
+import "./style.css";
 import { CatalogEntry, loadCatalog } from "./catalog";
 import {
   renderAbout,
   renderEntry,
+  renderFooter,
   renderHeader,
   renderList,
   renderPlaygroundStub,
@@ -61,47 +63,43 @@ function renderBattery(): HTMLElement {
   return el;
 }
 
-function route(): void {
-  app.innerHTML = "";
-  app.appendChild(renderHeader());
-
-  const hash = location.hash || "#/";
-
+function renderContent(hash: string): HTMLElement {
   if (hash === "#/" || hash === "") {
-    app.appendChild(renderList(entries));
-    return;
+    return renderList(entries);
   }
 
   if (hash === "#/about") {
-    app.appendChild(renderAbout());
-    return;
+    return renderAbout();
   }
 
   if (hash === "#/scope") {
-    app.appendChild(renderScope());
-    return;
+    return renderScope();
   }
 
   if (hash === "#/battery") {
-    app.appendChild(renderBattery());
-    return;
+    return renderBattery();
   }
 
   const entryMatch = hash.match(/^#\/e\/(.+)$/);
   if (entryMatch) {
     const entry = findEntry(entryMatch[1]);
-    app.appendChild(entry ? renderEntry(entry) : renderNotFound());
-    return;
+    return entry ? renderEntry(entry) : renderNotFound();
   }
 
   const playMatch = hash.match(/^#\/play\/(.+)$/);
   if (playMatch) {
     const entry = findEntry(playMatch[1]);
-    app.appendChild(entry ? renderPlaygroundStub(entry) : renderNotFound());
-    return;
+    return entry ? renderPlaygroundStub(entry) : renderNotFound();
   }
 
-  app.appendChild(renderNotFound());
+  return renderNotFound();
+}
+
+function route(): void {
+  app.innerHTML = "";
+  app.appendChild(renderHeader());
+  app.appendChild(renderContent(location.hash || "#/"));
+  app.appendChild(renderFooter());
 }
 
 window.addEventListener("hashchange", route);

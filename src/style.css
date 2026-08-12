@@ -1,0 +1,364 @@
+:root {
+  --bg: #000000;
+  --ink: #ececec;
+  --dim: #6e7681;
+  --blue: #58a6ff;
+  --orange: #ffb86b;
+  --magenta: #ff7ee3;
+  --green: #7ee787;
+  --rule: #262a2f;
+  --font-mono: "Consolas", "SF Mono", "Cascadia Code", monospace;
+  --measure: 72ch;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #fafafa;
+    --ink: #1f2328;
+    --dim: #57606a;
+    --rule: #d8dbdf;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark light;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+}
+
+a {
+  color: var(--blue);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 1px solid var(--blue);
+  outline-offset: 2px;
+}
+
+h1,
+h2 {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  margin: 0;
+}
+
+h1 {
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--dim);
+  border-top: 1px solid var(--rule);
+  padding-top: 2rem;
+  margin-top: 2rem;
+}
+
+p {
+  margin: 0.75rem 0;
+}
+
+.dim {
+  color: var(--dim);
+}
+
+/* header */
+
+.site-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 2rem 0 1.5rem;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.brand-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--ink);
+}
+
+.brand:hover {
+  text-decoration: none;
+}
+
+.wordmark {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.tagline {
+  margin: 0;
+  color: var(--dim);
+  font-size: 0.8rem;
+}
+
+.register {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.bit {
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--dim);
+}
+
+.bit-set {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.bit-clear {
+  background: transparent;
+}
+
+.brand:hover .bit-set:last-child {
+  animation: bit-flip 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand:hover .bit-set:last-child {
+    animation: none;
+  }
+}
+
+@keyframes bit-flip {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.site-header nav {
+  display: flex;
+  gap: 1.25rem;
+  padding-top: 0.3rem;
+}
+
+.site-header nav a {
+  color: var(--dim);
+  font-size: 0.85rem;
+}
+
+.site-header nav a:hover {
+  color: var(--blue);
+}
+
+/* footer */
+
+.site-footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.8rem;
+}
+
+.site-footer p {
+  margin: 0.35rem 0;
+}
+
+/* list page */
+
+.catalog-list h1 {
+  margin-bottom: 1.5rem;
+}
+
+.catalog-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.catalog-table th {
+  text-align: left;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+  font-weight: 400;
+  padding: 0.5rem 0.75rem 0.5rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.catalog-table td {
+  padding: 0.6rem 0.75rem 0.6rem 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.9rem;
+}
+
+.catalog-row:hover td {
+  color: var(--ink);
+  background: rgba(110, 118, 129, 0.08);
+}
+
+.catalog-table td:last-child,
+.catalog-table th:last-child {
+  color: var(--dim);
+}
+
+/* badges */
+
+.badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid currentColor;
+}
+
+.badge-proven {
+  color: var(--green);
+}
+
+.badge-best {
+  color: var(--blue);
+}
+
+.badge-upper {
+  color: var(--orange);
+}
+
+.badge-none {
+  color: var(--dim);
+}
+
+/* entry page */
+
+.entry .description {
+  color: var(--dim);
+  max-width: 60ch;
+}
+
+.entry .badge {
+  margin-top: 0.5rem;
+}
+
+pre.program {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.7;
+  background: rgba(110, 118, 129, 0.06);
+  border-left: 2px solid var(--dim);
+  padding: 0.9rem 1rem;
+  margin: 1rem 0 0;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.floor-note {
+  color: var(--green);
+  font-size: 0.85rem;
+}
+
+.floor-note::before {
+  content: "proof — ";
+  color: var(--dim);
+}
+
+.cost-note {
+  color: var(--orange);
+  font-size: 0.85rem;
+}
+
+.compiler-table,
+.example-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-top: 0.75rem;
+}
+
+.compiler-table th,
+.example-table th {
+  text-align: left;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  font-weight: 400;
+  padding: 0.4rem 0.75rem 0.4rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.compiler-table td,
+.example-table td {
+  padding: 0.4rem 0.75rem 0.4rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.derive-link,
+.back-link {
+  display: inline-block;
+  margin-top: 2rem;
+  margin-right: 1.5rem;
+}
+
+.back-link {
+  color: var(--dim);
+  font-size: 0.85rem;
+}
+
+.back-link:hover {
+  color: var(--blue);
+}
+
+/* battery */
+
+.battery pre {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* misc pages */
+
+.about p,
+.scope p {
+  max-width: 60ch;
+}
+
+.playground-stub {
+  color: var(--dim);
+}
