@@ -1,4 +1,4 @@
-import { ARITY, Instruction, Op, Operand, Program, countInputs } from "./ir";
+import { ARITY, Instruction, OPS, Op, Operand, Program, countInputs } from "./ir";
 import { applyZ3 } from "./encode";
 import { equivalent } from "./equiv";
 import { execute } from "./interp";
@@ -10,11 +10,16 @@ export interface Library {
 }
 
 export function parseLibrary(data: any): Library {
-  return {
-    ops: data.ops as Op[],
-    nConstants: data.n_constants ?? 0,
-    fixedConstants: data.fixed_constants ?? [],
-  };
+  const ops = (data.ops ?? []).map((op: any) => {
+    if (!OPS.includes(op)) throw new Error(`bad op: ${op}`);
+    return op as Op;
+  });
+  const nConstants = data.n_constants ?? 0;
+  const fixedConstants = data.fixed_constants ?? [];
+  if (!Number.isInteger(nConstants) || !Array.isArray(fixedConstants)) {
+    throw new Error("bad library");
+  }
+  return { ops, nConstants, fixedConstants };
 }
 
 const COMMUTATIVE = new Set<Op>(["add", "mul", "and", "or", "xor"]);
@@ -147,6 +152,7 @@ async function finiteSynthesis(
     }
   });
   const verdict = await solver.check();
+  if (verdict === "unknown") throw new Error("finite synthesis returned unknown");
   if (verdict !== "sat") return null;
   const model = solver.model();
   const readNum = (v: any) => Number(model.eval(v, true).value());

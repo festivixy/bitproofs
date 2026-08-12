@@ -41,7 +41,7 @@ function parseOperand(data: any): Operand {
 }
 
 export function parseProgram(data: any): Program {
-  if (!Number.isInteger(data.width) || !Array.isArray(data.instructions)) {
+  if (![8, 16, 32].includes(data.width) || !Array.isArray(data.instructions)) {
     throw new Error("bad program");
   }
   return {

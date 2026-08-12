@@ -1,11 +1,10 @@
 import { init } from "z3-solver";
 
-let context: any;
+let contextPromise: Promise<any> | undefined;
 
-export async function getContext(): Promise<any> {
-  if (!context) {
-    const { Context } = await init();
-    context = Context("main");
+export function getContext(): Promise<any> {
+  if (!contextPromise) {
+    contextPromise = init().then(({ Context }) => Context("main"));
   }
-  return context;
+  return contextPromise;
 }
