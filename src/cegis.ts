@@ -1,3 +1,4 @@
+import type { BitVec, BitVecNum, Context } from "z3-solver";
 import { ARITY, Instruction, OPS, Op, Operand, Program, countInputs } from "./ir";
 import { applyZ3 } from "./encode";
 import { equivalent } from "./equiv";
@@ -70,7 +71,7 @@ function bitLength(n: number): number {
 }
 
 async function finiteSynthesis(
-  ctx: any,
+  ctx: Context<"main">,
   spec: Program,
   library: Library,
   examples: number[][],
@@ -83,15 +84,17 @@ async function finiteSynthesis(
   const nConsts = nFree + fixed.length;
   const nLines = nInputs + nConsts + ops.length;
   const locWidth = Math.max(1, bitLength(nLines));
-  const lo = ops.map((_, k) => ctx.BitVec.const(`lo_${k}`, locWidth));
-  const li = new Map<string, any>();
+  const lo: BitVec<number, "main">[] = ops.map((_, k) => ctx.BitVec.const(`lo_${k}`, locWidth));
+  const li = new Map<string, BitVec<number, "main">>();
   ops.forEach((op, k) => {
     for (let j = 0; j < ARITY[op]; j++) {
       li.set(`${k}_${j}`, ctx.BitVec.const(`li_${k}_${j}`, locWidth));
     }
   });
-  const freeConsts = Array.from({ length: nFree }, (_, s) => ctx.BitVec.const(`c_${s}`, width));
-  const consts: any[] = [...freeConsts, ...fixed.map((v) => ctx.BitVec.val(v, width))];
+  const freeConsts: BitVec<number, "main">[] = Array.from({ length: nFree }, (_, s) =>
+    ctx.BitVec.const(`c_${s}`, width),
+  );
+  const consts: BitVec<number, "main">[] = [...freeConsts, ...fixed.map((v) => ctx.BitVec.val(v, width))];
   const solver = new ctx.Solver();
   const firstOpLine = nInputs + nConsts;
   for (const v of lo) {
@@ -124,8 +127,8 @@ async function finiteSynthesis(
   });
   examples.forEach((inputs, e) => {
     const expected = execute(spec, inputs);
-    const out = ops.map((_, k) => ctx.BitVec.const(`o_${e}_${k}`, width));
-    const iv = new Map<string, any>();
+    const out: BitVec<number, "main">[] = ops.map((_, k) => ctx.BitVec.const(`o_${e}_${k}`, width));
+    const iv = new Map<string, BitVec<number, "main">>();
     ops.forEach((op, k) => {
       for (let j = 0; j < ARITY[op]; j++) {
         iv.set(`${k}_${j}`, ctx.BitVec.const(`iv_${e}_${k}_${j}`, width));
@@ -155,7 +158,8 @@ async function finiteSynthesis(
   if (verdict === "unknown") throw new Error("finite synthesis returned unknown");
   if (verdict !== "sat") return null;
   const model = solver.model();
-  const readNum = (v: any) => Number(model.eval(v, true).value());
+  const readNum = (v: BitVec<number, "main">): number =>
+    Number((model.eval(v, true) as BitVecNum<number, "main">).value());
   const constValues = freeConsts.map(readNum);
   fixed.forEach((v) => constValues.push(v));
   const liValues = new Map<string, number>();
@@ -164,7 +168,7 @@ async function finiteSynthesis(
 }
 
 export async function synthesize(
-  ctx: any,
+  ctx: Context<"main">,
   spec: Program,
   library: Library,
   seed = 0,

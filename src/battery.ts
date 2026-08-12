@@ -1,3 +1,4 @@
+import type { Context } from "z3-solver";
 import { Program, parseProgram } from "./ir";
 import { Library, parseLibrary, synthesize } from "./cegis";
 import { equivalent } from "./equiv";
@@ -11,7 +12,7 @@ export interface BatteryRow {
   outcome: string;
 }
 
-async function synthOutcome(ctx: any, c: any): Promise<string> {
+async function synthOutcome(ctx: Context<"main">, c: any): Promise<string> {
   const spec = parseProgram(c.spec);
   const library: Library = parseLibrary(c.library);
   const result = await synthesize(ctx, spec, library);
@@ -23,7 +24,7 @@ async function synthOutcome(ctx: any, c: any): Promise<string> {
   return proof.kind === "equivalent" ? "ok (proof-verified)" : "MISMATCH";
 }
 
-async function equivOutcome(ctx: any, c: any): Promise<string> {
+async function equivOutcome(ctx: Context<"main">, c: any): Promise<string> {
   const a: Program = parseProgram(c.a);
   const b: Program = parseProgram(c.b);
   const result = await equivalent(ctx, a, b);
@@ -35,7 +36,7 @@ async function equivOutcome(ctx: any, c: any): Promise<string> {
   return "ok";
 }
 
-export async function runBattery(ctx: any, report: (row: BatteryRow) => void): Promise<void> {
+export async function runBattery(ctx: Context<"main">, report: (row: BatteryRow) => void): Promise<void> {
   for (const c of (synthesisVectors as any).cases) {
     const t0 = performance.now();
     let outcome: string;

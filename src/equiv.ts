@@ -1,3 +1,4 @@
+import type { BitVecNum, Context } from "z3-solver";
 import { Program, countInputs } from "./ir";
 import { encode } from "./encode";
 
@@ -5,7 +6,7 @@ export type EquivResult =
   | { kind: "equivalent" }
   | { kind: "counterexample"; inputs: number[] };
 
-export async function equivalent(ctx: any, a: Program, b: Program): Promise<EquivResult> {
+export async function equivalent(ctx: Context<"main">, a: Program, b: Program): Promise<EquivResult> {
   if (a.width !== b.width) throw new Error("width mismatch");
   const nInputs = Math.max(countInputs(a), countInputs(b));
   const ea = encode(ctx, a, nInputs);
@@ -16,6 +17,6 @@ export async function equivalent(ctx: any, a: Program, b: Program): Promise<Equi
   if (verdict === "unsat") return { kind: "equivalent" };
   if (verdict !== "sat") throw new Error(`solver returned ${verdict}`);
   const model = solver.model();
-  const inputs = ea.inputs.map((v: any) => Number(model.eval(v, true).value()));
+  const inputs = ea.inputs.map((v) => Number((model.eval(v, true) as BitVecNum<number, "main">).value()));
   return { kind: "counterexample", inputs };
 }
