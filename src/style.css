@@ -359,6 +359,62 @@ pre.program {
   max-width: 60ch;
 }
 
-.playground-stub {
+.playground .program {
+  margin-top: 0.75rem;
+}
+
+.playground-action {
+  margin: 1rem 0 1.5rem;
+}
+
+.btn-synthesize,
+.btn-prove {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--dim);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.btn-synthesize:hover,
+.btn-prove:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.btn-synthesize:disabled,
+.btn-prove:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.playground-status {
+  margin-top: 0.75rem;
+}
+
+.status-deriving {
+  color: var(--magenta);
+  font-size: 0.85rem;
+}
+
+.status-progress {
   color: var(--dim);
+  font-size: 0.85rem;
+}
+
+.status-success {
+  color: var(--green);
+  font-size: 0.85rem;
+}
+
+.status-failure {
+  color: var(--orange);
+  font-size: 0.85rem;
+}
+
+.frontier-note {
+  color: var(--dim);
+  font-size: 0.9rem;
 }

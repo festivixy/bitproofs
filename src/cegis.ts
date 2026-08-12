@@ -169,6 +169,7 @@ export async function synthesize(
   library: Library,
   seed = 0,
   maxIters = 64,
+  onExample?: (inputs: number[]) => void,
 ): Promise<Program | null> {
   const width = spec.width;
   const nInputs = countInputs(spec);
@@ -184,6 +185,7 @@ export async function synthesize(
     const result = await equivalent(ctx, program, spec);
     if (result.kind === "equivalent") return program;
     examples.push(result.inputs);
+    onExample?.(result.inputs);
   }
   throw new Error("cegis did not converge within maxIters");
 }

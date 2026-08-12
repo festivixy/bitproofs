@@ -31,7 +31,7 @@ function formatOperand(operand: Operand): string {
   return `r${operand.index}`;
 }
 
-function formatProgram(program: Program): string {
+export function formatProgram(program: Program): string {
   const lines = program.instructions.map((instruction, index) => {
     const operands = instruction.operands.map(formatOperand).join(" ");
     return `r${index} = ${instruction.op} ${operands}`;
@@ -40,7 +40,7 @@ function formatProgram(program: Program): string {
   return lines.join("\n");
 }
 
-function renderBackLink(href: string, text: string): HTMLAnchorElement {
+export function renderBackLink(href: string, text: string): HTMLAnchorElement {
   const link = document.createElement("a");
   link.className = "back-link";
   link.href = href;
@@ -289,19 +289,6 @@ export function renderEntry(entry: CatalogEntry): HTMLElement {
   }
 
   el.appendChild(renderBackLink("#/", "back to catalog"));
-
-  return el;
-}
-
-export function renderPlaygroundStub(entry: CatalogEntry): HTMLElement {
-  const el = document.createElement("div");
-  el.className = "playground-stub";
-
-  const p = document.createElement("p");
-  p.textContent = `playground for ${entry.title} coming soon`;
-  el.appendChild(p);
-
-  el.appendChild(renderBackLink(`#/e/${entry.slug}`, "back to entry"));
 
   return el;
 }

@@ -6,9 +6,9 @@ import {
   renderFooter,
   renderHeader,
   renderList,
-  renderPlaygroundStub,
   renderScope,
 } from "./pages";
+import { renderPlayground } from "./playground";
 import { getContext } from "./z3";
 import { runBattery } from "./battery";
 
@@ -89,7 +89,7 @@ function renderContent(hash: string): HTMLElement {
   const playMatch = hash.match(/^#\/play\/(.+)$/);
   if (playMatch) {
     const entry = findEntry(playMatch[1]);
-    return entry ? renderPlaygroundStub(entry) : renderNotFound();
+    return entry ? renderPlayground(entry) : renderNotFound();
   }
 
   return renderNotFound();
