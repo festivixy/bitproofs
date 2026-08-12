@@ -6,13 +6,16 @@ import { renderEntry } from "../src/pages";
 import { installFakeDocument } from "./dom-shim";
 
 const EXPECTED_SLUGS = [
-  "absval", "avg_ceil", "avg_floor", "bswap32", "clear_lowest_bit",
-  "flp2", "isolate_lowest_zero", "isolate_rmb", "popcount", "rotl5",
-  "sign", "smear_lowest_bit", "times_nine", "turn_off_trailing_ones",
+  "abs_diff", "absval", "avg_ceil", "avg_floor", "bit_reverse32",
+  "bswap32", "clear_lowest_bit", "clp2", "flp2", "isolate_highest_bit",
+  "isolate_lowest_zero", "isolate_rmb", "parity", "popcount", "rotl5",
+  "round_down_8", "round_up_8", "sign", "sign_extend_byte",
+  "smear_lowest_bit", "swap_halves", "times_nine",
+  "turn_off_trailing_ones", "turn_on_lowest_zero", "zero_high_half",
 ];
 
 describe("loadCatalog", () => {
-  it("returns 14 entries in survey order", () => {
+  it("returns 25 entries in catalog order", () => {
     const entries = loadCatalog();
     expect(entries.map((entry) => entry.slug)).toEqual(EXPECTED_SLUGS);
   });

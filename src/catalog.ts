@@ -54,9 +54,9 @@ function validateEntry(value: unknown): CatalogEntry {
 export function loadCatalog(): CatalogEntry[] {
   const data = asRecord(catalogJson);
   const entries = data.entries;
-  if (!Array.isArray(entries) || entries.length !== 14) {
+  if (!Array.isArray(entries) || entries.length !== 25) {
     throw new Error(
-      `expected 14 catalog entries, got ${Array.isArray(entries) ? entries.length : typeof entries}`,
+      `expected 25 catalog entries, got ${Array.isArray(entries) ? entries.length : typeof entries}`,
     );
   }
   return entries.map(validateEntry);
