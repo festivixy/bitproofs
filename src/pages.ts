@@ -132,15 +132,27 @@ function renderExampleTable(entry: CatalogEntry): HTMLTableElement {
   return table;
 }
 
-function renderRegister(): HTMLSpanElement {
+export const HEADER_REGISTER_INITIAL = 0b10101010;
+
+function renderRegister(value: number): HTMLSpanElement {
   const register = document.createElement("span");
   register.className = "register";
-  for (let i = 0; i < 8; i++) {
+  for (let i = 7; i >= 0; i--) {
     const bit = document.createElement("span");
-    bit.className = `bit ${i % 2 === 0 ? "bit-set" : "bit-clear"}`;
+    const isSet = ((value >>> i) & 1) === 1;
+    bit.className = `bit ${isSet ? "bit-set" : "bit-clear"}`;
     register.appendChild(bit);
   }
   return register;
+}
+
+export function updateRegisterBits(register: HTMLElement, value: number): void {
+  const bits = register.children;
+  for (let i = 0; i < 8; i++) {
+    const bit = bits[i] as HTMLElement;
+    const isSet = ((value >>> (7 - i)) & 1) === 1;
+    bit.className = `bit ${isSet ? "bit-set" : "bit-clear"}`;
+  }
 }
 
 export function renderHeader(): HTMLElement {
@@ -153,7 +165,7 @@ export function renderHeader(): HTMLElement {
   const brand = document.createElement("a");
   brand.className = "brand";
   brand.href = "#/";
-  brand.appendChild(renderRegister());
+  brand.appendChild(renderRegister(HEADER_REGISTER_INITIAL));
   const wordmark = document.createElement("span");
   wordmark.className = "wordmark";
   wordmark.textContent = "bitproofs";
@@ -236,7 +248,30 @@ function renderHero(): HTMLElement {
   ctas.appendChild(tryLink);
 
   hero.appendChild(ctas);
+  hero.appendChild(renderHeroTheater());
   return hero;
+}
+
+export const HERO_PLACEHOLDER_TEXT = "warming up the prover…";
+
+function renderHeroTheater(): HTMLElement {
+  const theater = document.createElement("div");
+  theater.className = "hero-theater";
+  const placeholder = document.createElement("p");
+  placeholder.className = "hero-theater-placeholder dim";
+  placeholder.textContent = HERO_PLACEHOLDER_TEXT;
+  theater.appendChild(placeholder);
+  return theater;
+}
+
+function renderStatBand(entries: CatalogEntry[]): HTMLElement {
+  const provenCount = entries.filter((entry) => entry.tier.includes("proven")).length;
+  const p = document.createElement("p");
+  p.className = "stat-band dim";
+  p.textContent =
+    `${entries.length} tricks · ${provenCount} proven minimal · ` +
+    "every proof covers all 4,294,967,296 inputs · 0 taken on faith";
+  return p;
 }
 
 export function renderList(entries: CatalogEntry[]): HTMLElement {
@@ -244,6 +279,7 @@ export function renderList(entries: CatalogEntry[]): HTMLElement {
   el.className = "catalog-list";
 
   el.appendChild(renderHero());
+  el.appendChild(renderStatBand(entries));
 
   const heading = document.createElement("h1");
   heading.textContent = "the catalog";

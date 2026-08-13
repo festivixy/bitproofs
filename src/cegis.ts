@@ -174,6 +174,7 @@ export async function synthesize(
   seed = 0,
   maxIters = 64,
   onExample?: (inputs: number[]) => void,
+  onCandidate?: (program: Program) => void,
 ): Promise<Program | null> {
   const width = spec.width;
   const nInputs = countInputs(spec);
@@ -186,6 +187,7 @@ export async function synthesize(
     const assignment = await finiteSynthesis(ctx, spec, library, examples, nInputs, width);
     if (assignment === null) return null;
     const program = decode(assignment, library, nInputs, width);
+    onCandidate?.(program);
     const result = await equivalent(ctx, program, spec);
     if (result.kind === "equivalent") return program;
     examples.push(result.inputs);

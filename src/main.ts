@@ -1,20 +1,62 @@
 import "./style.css";
 import { CatalogEntry, loadCatalog } from "./catalog";
 import {
+  HEADER_REGISTER_INITIAL,
   renderAbout,
   renderEntry,
   renderFooter,
   renderHeader,
   renderList,
   renderScope,
+  updateRegisterBits,
 } from "./pages";
 import { renderPlayground } from "./playground";
 import { renderCustom } from "./custom";
 import { getContext } from "./z3";
 import { runBattery } from "./battery";
+import { Library } from "./cegis";
+import { recordDerivation, playDerivation } from "./theater";
 
 const app = document.getElementById("app")!;
 const entries = loadCatalog();
+
+const ABSVAL_LIBRARY: Library = { ops: ["ashr", "xor", "sub"], nConstants: 0, fixedConstants: [] };
+const HERO_BEAT_MS = 900;
+const REGISTER_INTERVAL_MS = 2000;
+
+function startHeroTheater(): void {
+  const theater = document.querySelector(".hero-theater") as HTMLElement | null;
+  if (theater === null) return;
+  const absval = findEntry("absval");
+  const spec8 = absval?.spec_8bit;
+  if (!spec8) return;
+  (async () => {
+    try {
+      const ctx = await getContext();
+      const recording = await recordDerivation(ctx, spec8, ABSVAL_LIBRARY, () => {});
+      theater.textContent = "";
+      playDerivation(theater, recording, HERO_BEAT_MS);
+    } catch {
+      theater.textContent = "";
+      const p = document.createElement("p");
+      p.className = "hero-theater-placeholder dim";
+      p.textContent = "the prover could not start in this browser — the catalog below is fully precomputed.";
+      theater.appendChild(p);
+    }
+  })();
+}
+
+let headerRegisterValue = HEADER_REGISTER_INITIAL;
+
+function startHeaderCounter(): void {
+  const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  setInterval(() => {
+    if (reducedMotionQuery.matches) return;
+    headerRegisterValue = (headerRegisterValue + 1) % 256;
+    const register = document.querySelector(".site-header .register") as HTMLElement | null;
+    if (register !== null) updateRegisterBits(register, headerRegisterValue);
+  }, REGISTER_INTERVAL_MS);
+}
 
 function findEntry(slug: string): CatalogEntry | undefined {
   return entries.find((entry) => entry.slug === slug);
@@ -101,11 +143,14 @@ function renderContent(hash: string): HTMLElement {
 }
 
 function route(): void {
+  const hash = location.hash || "#/";
   app.innerHTML = "";
   app.appendChild(renderHeader());
-  app.appendChild(renderContent(location.hash || "#/"));
+  app.appendChild(renderContent(hash));
   app.appendChild(renderFooter());
+  if (hash === "#/") startHeroTheater();
 }
 
 window.addEventListener("hashchange", route);
 route();
+startHeaderCounter();

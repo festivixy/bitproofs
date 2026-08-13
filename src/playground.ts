@@ -4,6 +4,8 @@ import { toExpression } from "./cform";
 import { equivalent } from "./equiv";
 import { Op, Program } from "./ir";
 import { formatProgram, renderBackLink, renderExpressionLine } from "./pages";
+import { bitRegister } from "./register";
+import { renderProvedStamp } from "./theater";
 import { getContext } from "./z3";
 
 const TIMEOUT_MS = 10_000;
@@ -63,12 +65,16 @@ export async function runSynthesis(
   const ticker = setInterval(() => {
     deriving.textContent = `deriving… ${Math.round(performance.now() - t0)}ms`;
   }, 100);
+  const counterexampleStream = document.createElement("div");
+  counterexampleStream.className = "counterexample-stream";
+  status.appendChild(counterexampleStream);
   let exampleCount = 0;
   try {
     const ctx = await getContext();
     const program = await withTimeout(
-      synthesize(ctx, target, library, 0, 64, () => {
+      synthesize(ctx, target, library, 0, 64, (inputs) => {
         exampleCount += 1;
+        counterexampleStream.appendChild(bitRegister(inputs[0] ?? 0, target.width));
       }),
     );
     clearInterval(ticker);
@@ -91,6 +97,7 @@ export async function runSynthesis(
     status.appendChild(
       statusLine("status-success", `derived in ${elapsed}ms after ${exampleCount} counterexamples`),
     );
+    status.appendChild(renderProvedStamp());
     status.appendChild(
       statusLine(
         "dim",
@@ -145,6 +152,7 @@ async function runProof(
       status.appendChild(
         statusLine("status-success", `UNSAT — no input distinguishes them (${elapsed}ms)`),
       );
+      status.appendChild(renderProvedStamp());
       if (program.width === 32) {
         status.appendChild(
           statusLine(
